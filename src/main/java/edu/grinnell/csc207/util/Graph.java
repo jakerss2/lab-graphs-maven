@@ -1006,16 +1006,13 @@ public class Graph {
     this.clearMarks();
     while (!this.isMarked(sink)) {
       int vertex = minIndex(distances);
-      System.out.println("Yes I am changing vertex " + vertex);
       if (this.isMarked(vertex) || distances[vertex] == Integer.MAX_VALUE) {
-        System.out.println("Yes I am printing");
         // We're done
         break;
       } 
       this.mark(vertex);
       for (Edge neighbor : this.edgesFrom(vertex)) {
         int vertexTo = neighbor.target();
-        System.out.println("Yes I am changing the vertexTo " + vertexTo);
         if (distances[vertex] + neighbor.weight() < distances[vertexTo]) {
           distances[vertexTo] = distances[vertex] + neighbor.weight();
           pointBack[vertexTo] = neighbor;
