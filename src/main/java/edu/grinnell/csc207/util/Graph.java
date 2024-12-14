@@ -14,6 +14,7 @@ import java.util.Queue;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.Stack;
 
 /**
  * A simple weighted, directed, graph.
@@ -976,4 +977,71 @@ public class Graph {
     return num;
   } // safeVertexNumber(String)
 
+  /**
+   * 
+   */
+  public void reachableFrom(PrintWriter pen, int vertex) {
+    clearMarks();
+    pen.println ("Following vertexes are reachable from " + vertexName(vertex));
+    reachableFromHelper(pen, vertex);
+  }
+
+  private void reachableFromHelper(PrintWriter pen, int vertex) {
+    pen.println(vertexName(vertex));
+    List<Edge> myEdge = this.vertices[vertex];
+    mark(vertex);
+    for (Edge edg : myEdge) {
+      if (!isMarked(edg.target())) {
+        reachableFromHelper(pen, edg.target());
+      }
+    }
+  }
+
+  public List<Edge> shortestPath(int source, int sink) {
+    int[] distances = new int[this.numVertices];
+    Edge[] pointBack = new Edge[this.numVertices];
+    Arrays.fill(distances, Integer.MAX_VALUE);
+    Arrays.fill(pointBack, null);
+    distances[source] = 0;
+    this.clearMarks();
+    while (!this.isMarked(sink)) {
+      int vertex = minIndex(distances);
+      System.out.println("Yes I am changing vertex " + vertex);
+      if (this.isMarked(vertex) || distances[vertex] == Integer.MAX_VALUE) {
+        System.out.println("Yes I am printing");
+        // We're done
+        break;
+      } 
+      this.mark(vertex);
+      for (Edge neighbor : this.edgesFrom(vertex)) {
+        int vertexTo = neighbor.target();
+        System.out.println("Yes I am changing the vertexTo " + vertexTo);
+        if (distances[vertex] + neighbor.weight() < distances[vertexTo]) {
+          distances[vertexTo] = distances[vertex] + neighbor.weight();
+          pointBack[vertexTo] = neighbor;
+        }
+      }
+    }
+    ArrayList<Edge> path = new ArrayList<Edge>();
+    if (!this.isMarked(sink)) {
+      return null;
+    }
+
+    for (int vertex = sink; pointBack[vertex] != null; vertex = pointBack[vertex].source()) {
+      path.add(pointBack[vertex]);
+    }
+    return path;
+  }
+
+  private int minIndex(int[] distances) {
+    int minIndex = -1;
+    int minValue = Integer.MAX_VALUE;
+    for (int i = 0; i < distances.length; i++) {
+      if (distances[i] < minValue && !this.isMarked(i)) {
+        minIndex = i;
+        minValue = distances[i];
+      }
+    }
+    return minIndex;
+  }
 } // class Graph
